@@ -1,13 +1,20 @@
 package com.framework.pages;
 
 import com.framework.base.BasePage;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
 
+/**
+ * CartPage implemented using Selenium PageFactory pattern.
+ */
 public class CartPage extends BasePage {
 
-    private final By cartItemName = By.cssSelector(".inventory_item_name");
-    private final By checkoutButton = By.id("checkout");
+    @FindBy(css = ".inventory_item_name")
+    private WebElement cartItemName;
+
+    @FindBy(id = "checkout")
+    private WebElement checkoutButton;
 
     public CartPage(WebDriver driver) {
         super(driver);
@@ -17,7 +24,7 @@ public class CartPage extends BasePage {
         return getText(cartItemName);
     }
 
-    public void proceedToCheckout() {
+    public void clickCheckout() {
         click(checkoutButton);
     }
 }

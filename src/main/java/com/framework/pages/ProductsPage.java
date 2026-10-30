@@ -1,36 +1,45 @@
 package com.framework.pages;
 
 import com.framework.base.BasePage;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
 
+/**
+ * ProductsPage implemented using Selenium PageFactory pattern.
+ */
 public class ProductsPage extends BasePage {
 
-    // 1. Locators
-    private final By titleHeading = By.cssSelector(".title");
-    private final By addToCartSauceLabsBackpack = By.id("add-to-cart-sauce-labs-backpack");
-    private final By shoppingCartBadge = By.cssSelector(".shopping_cart_badge");
-    private final By shoppingCartLink = By.cssSelector(".shopping_cart_link");
+    @FindBy(css = ".title")
+    private WebElement titleHeading;
+
+    @FindBy(id = "add-to-cart-sauce-labs-backpack")
+    private WebElement addToCartBackpackBtn;
+
+    @FindBy(css = ".shopping_cart_badge")
+    private WebElement cartBadge;
+
+    @FindBy(css = ".shopping_cart_link")
+    private WebElement shoppingCartLink;
 
     public ProductsPage(WebDriver driver) {
         super(driver);
     }
 
-    // 2. Actions
     public boolean isLoaded() {
         return isDisplayed(titleHeading);
     }
 
-    public String getTitleText() {
+    public String getTitle() {
         return getText(titleHeading);
     }
 
     public void addBackpackToCart() {
-        click(addToCartSauceLabsBackpack);
+        click(addToCartBackpackBtn);
     }
 
     public String getCartCount() {
-        return getText(shoppingCartBadge);
+        return getText(cartBadge);
     }
 
     public CartPage goToCart() {

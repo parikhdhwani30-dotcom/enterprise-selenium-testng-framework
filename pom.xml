@@ -9,8 +9,8 @@
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
-    <name>Enterprise Selenium TestNG Automation Framework</name>
-    <description>Enterprise-grade Selenium WebDriver + TestNG framework with Page Object Model, Parallel Execution, and ExtentReports</description>
+    <name>Enterprise Selenium TestNG PageFactory Framework</name>
+    <description>Enterprise-grade Selenium WebDriver + TestNG framework with PageFactory (@FindBy), Allure Reporting, Email Notifications, and Session Storage Re-use</description>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
@@ -18,10 +18,11 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <selenium.version>4.20.0</selenium.version>
         <testng.version>7.9.0</testng.version>
-        <extentreports.version>5.1.1</extentreports.version>
+        <allure.version>2.27.0</allure.version>
+        <aspectj.version>1.9.22</aspectj.version>
         <webdrivermanager.version>5.8.0</webdrivermanager.version>
-        <poi.version>5.2.5</poi.version>
-        <log4j.version>2.23.1</log4j.version>
+        <javax.mail.version>1.6.2</javax.mail.version>
+        <jackson.version>2.17.0</jackson.version>
     </properties>
 
     <dependencies>
@@ -46,35 +47,25 @@
             <version>${testng.version}</version>
         </dependency>
 
-        <!-- ExtentReports -->
+        <!-- Allure TestNG -->
         <dependency>
-            <groupId>com.aventstack</groupId>
-            <artifactId>extentreports</artifactId>
-            <version>${extentreports.version}</version>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-testng</artifactId>
+            <version>${allure.version}</version>
         </dependency>
 
-        <!-- Apache POI for Data-Driven Testing (Excel) -->
+        <!-- JavaMail API for Email Reports -->
         <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi</artifactId>
-            <version>${poi.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi-ooxml</artifactId>
-            <version>${poi.version}</version>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>javax.mail</artifactId>
+            <version>${javax.mail.version}</version>
         </dependency>
 
-        <!-- Log4j2 Logging -->
+        <!-- Jackson for Session Storage Serialization -->
         <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-api</artifactId>
-            <version>${log4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>${log4j.version}</version>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
         </dependency>
     </dependencies>
 
@@ -91,7 +82,7 @@
                 </configuration>
             </plugin>
 
-            <!-- Maven Surefire Plugin (Parallel Test Execution) -->
+            <!-- Maven Surefire Plugin with AspectJ for Allure -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -100,6 +91,29 @@
                     <suiteXmlFiles>
                         <suiteXmlFile>src/test/resources/testng-parallel.xml</suiteXmlFile>
                     </suiteXmlFiles>
+                    <argLine>
+                        -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"
+                    </argLine>
+                    <systemPropertyVariables>
+                        <allure.results.directory>${project.build.directory}/allure-results</allure.results.directory>
+                    </systemPropertyVariables>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.aspectj</groupId>
+                        <artifactId>aspectjweaver</artifactId>
+                        <version>${aspectj.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+
+            <!-- Allure Maven Plugin -->
+            <plugin>
+                <groupId>io.qameta.allure</groupId>
+                <artifactId>allure-maven</artifactId>
+                <version>2.12.0</version>
+                <configuration>
+                    <reportVersion>${allure.version}</reportVersion>
                 </configuration>
             </plugin>
         </plugins>

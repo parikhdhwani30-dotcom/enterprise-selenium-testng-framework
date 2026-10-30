@@ -1,51 +1,60 @@
 package com.framework.base;
 
-import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 
 /**
- * BasePage encapsulating common Selenium WebDriver explicit waits and actions.
+ * BasePage implementing standard Selenium PageFactory.
+ * Initializes all @FindBy WebElements on child page instantiation.
  */
-public class BasePage {
+public abstract class BasePage {
 
     protected WebDriver driver;
     protected WebDriverWait wait;
+    protected JavascriptExecutor js;
 
     public BasePage(WebDriver driver) {
         this.driver = driver;
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        this.js = (JavascriptExecutor) driver;
+        // Standard PageFactory initialization
+        PageFactory.initElements(driver, this);
     }
 
-    protected WebElement waitForVisibility(By locator) {
-        return wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+    protected void waitForVisibility(WebElement element) {
+        wait.until(ExpectedConditions.visibilityOf(element));
     }
 
-    protected WebElement waitForClickability(By locator) {
-        return wait.until(ExpectedConditions.elementToBeClickable(locator));
+    protected void waitForClickability(WebElement element) {
+        wait.until(ExpectedConditions.elementToBeClickable(element));
     }
 
-    protected void click(By locator) {
-        waitForClickability(locator).click();
+    protected void click(WebElement element) {
+        waitForClickability(element);
+        element.click();
     }
 
-    protected void sendKeys(By locator, String text) {
-        WebElement element = waitForVisibility(locator);
+    protected void sendKeys(WebElement element, String text) {
+        waitForVisibility(element);
         element.clear();
         element.sendKeys(text);
     }
 
-    protected String getText(By locator) {
-        return waitForVisibility(locator).getText();
+    protected String getText(WebElement element) {
+        waitForVisibility(element);
+        return element.getText();
     }
 
-    protected boolean isDisplayed(By locator) {
+    protected boolean isDisplayed(WebElement element) {
         try {
-            return waitForVisibility(locator).isDisplayed();
+            waitForVisibility(element);
+            return element.isDisplayed();
         } catch (Exception e) {
             return false;
         }
